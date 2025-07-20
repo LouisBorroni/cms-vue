@@ -6,7 +6,7 @@ const pool = mysql.createPool({
   port: 3640,
   user: 'root',
   password: 'mysqltests',
-  database: 'cms_db',   // Assure-toi que cette base existe
+  database: 'cms_db',   
 });
 
 module.exports = pool;

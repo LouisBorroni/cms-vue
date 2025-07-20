@@ -34,9 +34,12 @@ const login = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email.value, password: password.value }),
     })
+
     const data = await res.json()
+
     if (res.ok) {
       localStorage.setItem('token', data.token)
+      localStorage.setItem('userId', data.userId)
       router.push('/dashboard')
     } else {
       alert(data.error)
@@ -45,6 +48,7 @@ const login = async () => {
     alert('Erreur réseau')
   }
 }
+
 
 const goRegister = () => router.push('/register')
 </script>
