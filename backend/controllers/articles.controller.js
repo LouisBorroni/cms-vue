@@ -1,18 +1,15 @@
-const express = require('express')
-const router = express.Router()
 const db = require('../config/db')
-const auth = require('../middleware/auth')
 
-router.get('/', async (req, res) => {
+exports.getAllArticles = async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM articles')
     res.json(rows)
   } catch (err) {
     res.status(500).json({ error: 'Erreur lors de la récupération des articles' })
   }
-})
+}
 
-router.post('/', auth, async (req, res) => {
+exports.createArticle = async (req, res) => {
   const { name, description, price, image_url } = req.body
   try {
     await db.query(
@@ -23,9 +20,9 @@ router.post('/', auth, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Erreur lors de l’ajout de l’article' })
   }
-})
+}
 
-router.put('/:id', auth, async (req, res) => {
+exports.updateArticle = async (req, res) => {
   const { id } = req.params
   const { name, description, price, image_url } = req.body
   try {
@@ -37,9 +34,9 @@ router.put('/:id', auth, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Erreur lors de la modification' })
   }
-})
+}
 
-router.delete('/:id', auth, async (req, res) => {
+exports.deleteArticle = async (req, res) => {
   const { id } = req.params
   try {
     await db.query('DELETE FROM articles WHERE id = ?', [id])
@@ -47,6 +44,4 @@ router.delete('/:id', auth, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Erreur lors de la suppression' })
   }
-})
-
-module.exports = router
+}

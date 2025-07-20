@@ -5,7 +5,7 @@ const app = express();
 
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
-const articleRoutes = require('./routes/article.routes');
+const articlesRoutes = require('./routes/articles.routes');
 const ordersRoutes = require('./routes/orders.routes');
 const adminRoutes = require('./routes/admin.routes');
 
@@ -14,7 +14,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/articles', articleRoutes);
+app.use('/api/articles', articlesRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/admin', adminRoutes);
 
