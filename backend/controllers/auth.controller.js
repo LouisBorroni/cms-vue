@@ -51,6 +51,10 @@ exports.register = async (req, res) => {
 
 
 exports.login = async (req, res) => {
+    const caca = 'adminpassword';
+    bcrypt.hash(caca, 10).then(hash => console.log(hash));
+    console.log('zob');
+  
   const { email, password } = req.body;
   try {
     const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);

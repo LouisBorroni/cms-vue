@@ -22,6 +22,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { jwtDecode } from 'jwt-decode';
 
 const email = ref('')
 const password = ref('')
@@ -33,21 +34,22 @@ const login = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email.value, password: password.value }),
-    })
+    });
 
-    const data = await res.json()
+    const data = await res.json();
 
     if (res.ok) {
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('userId', data.userId)
-      router.push('/dashboard')
+      const decoded = jwtDecode(data.token);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('role', decoded.role);
+      router.push('/dashboard');
     } else {
-      alert(data.error)
+      alert(data.error);
     }
   } catch {
-    alert('Erreur réseau')
+    alert('Erreur réseau');
   }
-}
+};
 
 
 const goRegister = () => router.push('/register')

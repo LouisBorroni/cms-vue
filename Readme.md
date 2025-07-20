@@ -17,6 +17,10 @@ bdd :
         role ENUM('user', 'admin') DEFAULT 'user'
         );
 
+        INSERT INTO users (email, password, role)
+        VALUES ('admin@example.com', '$2b$10$W7PYV9M9wrKNHQVmNsE6Euwz/9HgNiEnyKqqQUhlGbTOs1PChtGvO', 'admin');
+
+
         CREATE TABLE IF NOT EXISTS articles (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -68,3 +72,8 @@ backend :
 - cd backend 
 - npm i
 - npm run dev
+
+
+se connecter en tant qu'admin: 
+- login : admin@example.com
+- password : adminpassword

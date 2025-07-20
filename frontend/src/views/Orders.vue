@@ -1,8 +1,8 @@
 <template>
   <v-app>
     <Navbar :cartCount="0" @logout="logout" @go-cart="goCart" />
-
-    <v-container fluid>
+    <v-main class="pa-6">
+            <v-container fluid>
       <h2 class="text-center my-8">📦 Historique des commandes</h2>
 
       <v-alert
@@ -51,6 +51,7 @@
         </v-list-item>
       </v-list>
     </v-container>
+    </v-main>
   </v-app>
 </template>
 

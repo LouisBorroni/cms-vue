@@ -5,6 +5,7 @@ import Register from "../views/Register.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Cart from "../views/Cart.vue";
 import Orders from "../views/Orders.vue";
+import AdminUser from "../views/AdminUser.vue";
 
 const routes = [
   { path: "/", redirect: "/login" },
@@ -27,6 +28,12 @@ const routes = [
     component: Orders,
     meta: { requiresAuth: true },
   },
+  {
+  path: '/admin/users',
+  name: 'AdminUsers',
+  component: AdminUser,
+  meta: { requiresAuth: true, requiresAdmin: true }
+}
 ];
 
 const router = createRouter({

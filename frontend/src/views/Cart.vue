@@ -1,8 +1,8 @@
 <template>
   <v-app>
     <Navbar :cartCount="cart.length" @logout="logout" @go-cart="goCart" />
-
-    <v-container fluid>
+    <v-main class="pa-6">
+            <v-container fluid>
       <v-row justify="center" class="mt-10">
         <v-col cols="12" md="8">
           <h2 class="text-center mb-8">🛒 Mon Panier</h2>
@@ -87,6 +87,7 @@
         </v-col>
       </v-row>
     </v-container>
+    </v-main>
   </v-app>
 </template>
 
