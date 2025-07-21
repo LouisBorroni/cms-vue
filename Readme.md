@@ -1,7 +1,8 @@
 Pour lancer l'application :
 
 bdd :
-- il faudra surement créer la table users si c'est pas déjà fait
+- cd docker
+- docker compose up -d
 - http://localhost:8895/
 - user : root
 - password : mysqltests
