@@ -1,6 +1,9 @@
 Pour lancer l'application :
 
 bdd :
+- à mettre dans un .env.local dans le dossier docker :
+        MYSQL_ROOT_PASSWORD=mysqltests
+        MYSQL_HOST=%
 - cd docker
 - docker compose up -d
 - http://localhost:8895/
@@ -65,6 +68,14 @@ bdd :
 
 
 frontend : 
+- à mettre dans le .env du backend
+        DB_HOST=localhost
+        DB_PORT=3640
+        DB_USER=devuser
+        DB_PASSWORD=devpass
+        DB_NAME=cms_db
+        JWT_SECRET=supersecretkey
+
 - cd frontend
 - npm i
 - http://localhost:5173/
@@ -78,3 +89,8 @@ backend :
 se connecter en tant qu'admin: 
 - login : admin@example.com
 - password : adminpassword
+
+
+
+
+à mettre
