@@ -1,114 +1,83 @@
 <template>
-  <v-app>
+  <div class="min-h-screen bg-gray-50 w-full">
     <Navbar :cartCount="0" @logout="logout" @go-cart="goCart" />
-
-    <v-main class="pa-6">
-      <v-container>
-        <h2 class="my-6 text-center">Administration des Articles</h2>
-
-        <v-alert v-if="error" type="error" class="mb-4">{{ error }}</v-alert>
-
-        <v-btn color="primary" class="mb-4" @click="openDialog()"
-          >Ajouter un article</v-btn
-        >
-
-        <table class="admin-table">
+    <main class="py-8 px-4 w-full max-w-5xl mx-auto">
+      <h2 class="text-3xl font-bold mb-8 text-primary-600 text-center">Administration des Articles</h2>
+      <div v-if="error" class="bg-red-50 border-l-4 border-red-400 text-red-700 p-4 rounded-lg shadow mb-6 text-center">
+        {{ error }}
+      </div>
+      <div class="flex justify-end mb-4">
+        <button @click="openDialog()" class="px-4 py-2 bg-primary-600 text-white rounded-full font-semibold hover:bg-primary-700 transition">Ajouter un article</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white rounded-xl shadow-lg">
           <thead>
-            <tr>
-              <th>Nom</th>
-              <th>Description</th>
-              <th>Prix (€)</th>
-              <th>Actions</th>
+            <tr class="bg-gray-100">
+              <th class="py-3 px-4 text-left font-semibold text-gray-700">Nom</th>
+              <th class="py-3 px-4 text-left font-semibold text-gray-700">Description</th>
+              <th class="py-3 px-4 text-left font-semibold text-gray-700">Prix (€)</th>
+              <th class="py-3 px-4 text-left font-semibold text-gray-700">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="article in articles" :key="article.id">
-              <td>{{ article.name }}</td>
-              <td>{{ article.description }}</td>
-              <td>
-                {{
-                  isNaN(parseFloat(article.price))
-                    ? "N/A"
-                    : Number(article.price).toFixed(2)
-                }}
-              </td>
-              <td>
-                <v-btn
-                  icon
-                  color="blue"
-                  @click="openDialog(article)"
-                  title="Modifier"
-                >
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-                <v-btn
-                  icon
-                  color="red"
-                  @click="deleteArticle(article.id)"
-                  title="Supprimer"
-                >
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
+            <tr v-for="article in articles" :key="article.id" class="border-b last:border-b-0 hover:bg-gray-50">
+              <td class="py-3 px-4 font-semibold">{{ article.name }}</td>
+              <td class="py-3 px-4 text-gray-600">{{ article.description }}</td>
+              <td class="py-3 px-4 text-primary-600 font-bold">{{ isNaN(parseFloat(article.price)) ? 'N/A' : Number(article.price).toFixed(2) }}</td>
+              <td class="py-3 px-4 flex gap-2">
+                <button @click="openDialog(article)" class="text-white bg-blue-500 hover:bg-blue-100 hover:text-blue-700 p-2 rounded-full transition" title="Modifier">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20h9M16.5 3.5a2.121 2.121 0 113 3L7 19.5 3 21l1.5-4L16.5 3.5z" />
+                  </svg>
+                </button>
+                <button @click="deleteArticle(article.id)" class="text-red-500 hover:text-red-700 p-2 rounded-full transition" title="Supprimer">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </td>
             </tr>
             <tr v-if="articles.length === 0">
-              <td colspan="4" class="text-center">Aucun article disponible.</td>
+              <td colspan="4" class="text-center py-6 text-gray-500">Aucun article disponible.</td>
             </tr>
           </tbody>
         </table>
-
-        <v-dialog v-model="dialog" max-width="600px">
-          <v-card>
-            <v-card-title>
-              <span class="headline"
-                >{{ isEdit ? "Modifier" : "Ajouter" }} un article</span
-              >
-            </v-card-title>
-
-            <v-card-text>
-              <v-form ref="formRef" v-model="valid">
-                <v-text-field
-                  label="Nom"
-                  v-model="form.name"
-                  :rules="[(v) => !!v || 'Le nom est requis']"
-                  required
-                />
-                <v-textarea
-                  label="Description"
-                  v-model="form.description"
-                  :rules="[(v) => !!v || 'La description est requise']"
-                  required
-                />
-                <v-text-field
-                  label="Prix (€)"
-                  v-model="form.price"
-                  :rules="[
-                    (v) =>
-                      (!!v && !isNaN(parseFloat(v))) || 'Prix valide requis',
-                  ]"
-                  required
-                />
-                <v-text-field
-                  label="URL image"
-                  v-model="form.image_url"
-                  :rules="[(v) => !!v || 'URL image requise']"
-                  required
-                />
-              </v-form>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn text @click="closeDialog">Annuler</v-btn>
-              <v-btn color="primary" :disabled="!valid" @click="saveArticle">
-                {{ isEdit ? "Modifier" : "Ajouter" }}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-container>
-    </v-main>
-  </v-app>
+      </div>
+      <!-- Modal -->
+      <div v-if="dialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+        <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg relative">
+          <button @click="closeDialog" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <h3 class="text-xl font-bold text-primary-600 mb-6 text-center">{{ isEdit ? 'Modifier' : 'Ajouter' }} un article</h3>
+          <form @submit.prevent="saveArticle" class="space-y-4">
+            <div>
+              <label class="block text-gray-700 mb-1 font-semibold">Nom</label>
+              <input v-model="form.name" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600" />
+            </div>
+            <div>
+              <label class="block text-gray-700 mb-1 font-semibold">Description</label>
+              <textarea v-model="form.description" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"></textarea>
+            </div>
+            <div>
+              <label class="block text-gray-700 mb-1 font-semibold">Prix (€)</label>
+              <input v-model="form.price" type="number" step="0.01" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600" />
+            </div>
+            <div>
+              <label class="block text-gray-700 mb-1 font-semibold">URL image</label>
+              <input v-model="form.image_url" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600" />
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+              <button type="button" @click="closeDialog" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300 transition">Annuler</button>
+              <button type="submit" :disabled="!form.name || !form.description || !form.price || !form.image_url" class="px-4 py-2 bg-primary-600 text-white rounded-full font-semibold hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed">{{ isEdit ? 'Modifier' : 'Ajouter' }}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
 </template>
 
 <script setup>
@@ -121,9 +90,7 @@ const router = useRouter();
 const articles = ref([]);
 const error = ref("");
 const dialog = ref(false);
-const valid = ref(false);
 const isEdit = ref(false);
-const formRef = ref(null);
 const form = reactive({
   id: null,
   name: "",
@@ -170,12 +137,11 @@ const openDialog = (article = null) => {
 const closeDialog = () => {
   dialog.value = false;
   error.value = "";
-  if (formRef.value) formRef.value.resetValidation();
 };
 
 const saveArticle = async () => {
   try {
-    if (!valid.value) return;
+    if (!form.name || !form.description || !form.price || !form.image_url) return;
 
     const method = isEdit.value ? "PUT" : "POST";
     const url = isEdit.value
@@ -240,31 +206,3 @@ onMounted(() => {
   fetchArticles();
 });
 </script>
-
-<style scoped>
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.admin-table th,
-.admin-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-
-.admin-table th {
-  background-color: #f2f2f2;
-  font-weight: 600;
-  font-size: 16px;
-}
-
-.admin-table tr:hover {
-  background-color: #f1f1f1;
-}
-
-.admin-table td > button {
-  margin-right: 8px;
-}
-</style>

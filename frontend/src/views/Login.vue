@@ -1,22 +1,29 @@
 <template>
-  <v-container class="fill-height" fluid>
-    <v-row align="center" justify="center">
-      <v-col cols="12" sm="8" md="4">
-        <v-card>
-          <v-card-title>Connexion</v-card-title>
-          <v-card-text>
-            <v-text-field label="Email" v-model="email" />
-            <v-text-field label="Mot de passe" v-model="password" type="password" />
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" @click="login">Se connecter</v-btn>
-            <v-spacer></v-spacer>
-            <v-btn text @click="goRegister">Créer un compte</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center w-full">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+      <h2 class="text-2xl font-bold text-primary-600 mb-6 text-center">Connexion</h2>
+      <form @submit.prevent="login" class="space-y-6">
+        <div>
+          <label class="block text-gray-700 mb-1 font-semibold">Email</label>
+          <input v-model="email" type="email" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600" />
+        </div>
+        <div>
+          <label class="block text-gray-700 mb-1 font-semibold">Mot de passe</label>
+          <input v-model="password" type="password" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600" />
+        </div>
+        <button type="submit" class="w-full py-3 bg-primary-600 text-primary-50 rounded-full font-semibold shadow hover:bg-primary-400 hover:text-primary-700 flex items-center justify-center gap-2 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Se connecter
+        </button>
+      </form>
+      <div class="mt-6 text-center">
+        <span class="text-gray-600">Pas de compte ?</span>
+        <button @click="goRegister" class="ml-2 text-primary-600 font-semibold hover:underline">Créer un compte</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -50,7 +57,6 @@ const login = async () => {
     alert('Erreur réseau');
   }
 };
-
 
 const goRegister = () => router.push('/register')
 </script>

@@ -1,58 +1,36 @@
 <template>
-  <v-app>
+  <div class="min-h-screen bg-gray-50 w-full">
     <Navbar :cartCount="0" @logout="logout" @go-cart="goCart" />
-    <v-main class="pa-6">
-            <v-container fluid>
-      <h2 class="text-center my-8">📦 Historique des commandes</h2>
-
-      <v-alert
-        v-if="orders.length === 0"
-        type="info"
-        class="mb-8"
-        border="left"
-        colored-border
-        elevation="2"
-      >
+    <main class="py-8 px-4 w-full max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold mb-8 text-primary-600 text-center flex items-center justify-center">📦 Historique des commandes</h2>
+      <div v-if="orders.length === 0" class="bg-blue-50 border-l-4 border-blue-400 text-blue-700 p-6 rounded-lg shadow mb-8 text-center">
         Aucune commande trouvée.
-      </v-alert>
-
-      <v-list v-if="orders.length > 0" class="elevation-2 rounded-lg">
-        <v-list-item
-          v-for="order in orders"
-          :key="order.id"
-          class="pa-4 flex-column"
-        >
-          <div class="mb-3 font-weight-bold">
-            Commande #{{ order.id }} — 
-            {{ new Date(order.created_at).toLocaleString() }}
+      </div>
+      <div v-else class="space-y-8">
+        <div v-for="order in orders" :key="order.id" class="bg-white rounded-xl shadow p-6">
+          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
+            <div class="text-lg font-bold text-primary-600">Commande #{{ order.id }}</div>
+            <div class="text-gray-500">{{ new Date(order.created_at).toLocaleString() }}</div>
           </div>
-
-          <v-list dense>
-            <v-list-item
-              v-for="item in order.items"
-              :key="item.id"
-              class="py-1"
-            >
-              <v-list-item-content>
-                <v-list-item-title>{{ item.name }}</v-list-item-title>
-                <v-list-item-subtitle>
-                  {{ item.quantity }} × {{ formatPrice(item.price) }} € =
-                  {{ formatPrice(item.price * item.quantity) }} €
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-
-          <div class="text-right font-weight-bold mt-4">
+          <div class="divide-y divide-gray-200">
+            <div v-for="item in order.items" :key="item.id" class="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex items-center gap-4">
+                <img :src="item.image_url || 'https://via.placeholder.com/80'" class="w-16 h-16 object-cover rounded-lg border" />
+                <div>
+                  <div class="font-semibold text-gray-800">{{ item.name }}</div>
+                  <div class="text-gray-500 text-sm">x{{ item.quantity }}</div>
+                </div>
+              </div>
+              <div class="mt-2 sm:mt-0 text-primary-600 font-bold">{{ formatPrice(item.price * item.quantity) }} €</div>
+            </div>
+          </div>
+          <div class="text-right font-bold text-lg text-primary-600 mt-4">
             Total : {{ formatPrice(order.total) }} €
           </div>
-
-          <v-divider class="my-4"></v-divider>
-        </v-list-item>
-      </v-list>
-    </v-container>
-    </v-main>
-  </v-app>
+        </div>
+      </div>
+    </main>
+  </div>
 </template>
 
 <script setup>
@@ -112,12 +90,3 @@ onMounted(() => {
   fetchOrders();
 });
 </script>
-
-<style scoped>
-.v-list-item {
-  border-bottom: 1px solid #eee;
-}
-.v-list-item:last-child {
-  border-bottom: none;
-}
-</style>

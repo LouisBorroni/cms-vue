@@ -1,35 +1,30 @@
 <template>
-  <v-container class="fill-height" fluid>
-    <v-row align="center" justify="center">
-      <v-col cols="12" sm="8" md="4">
-        <v-card>
-          <v-card-title>Inscription</v-card-title>
-          <v-card-text>
-            <v-form ref="form">
-              <v-text-field
-                label="Email"
-                v-model="email"
-                :rules="emailRules"
-                required
-              />
-              <v-text-field
-                label="Mot de passe"
-                v-model="password"
-                type="password"
-                :rules="passwordRules"
-                required
-              />
-            </v-form>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" @click="register">S'inscrire</v-btn>
-            <v-spacer></v-spacer>
-            <v-btn text @click="goLogin">J'ai déjà un compte</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center w-full">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+      <h2 class="text-2xl font-bold text-primary-600 mb-6 text-center">Inscription</h2>
+      <form @submit.prevent="register" class="space-y-6">
+        <div>
+          <label class="block text-gray-700 mb-1 font-semibold">Email</label>
+          <input v-model="email" type="email" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600" />
+        </div>
+        <div>
+          <label class="block text-gray-700 mb-1 font-semibold">Mot de passe</label>
+          <input v-model="password" type="password" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600" />
+          <div class="text-xs text-gray-500 mt-1">8 caractères, majuscule, minuscule, chiffre, spécial</div>
+        </div>
+        <button type="submit" class="w-full py-3 bg-primary-600 text-primary-50 rounded-full font-semibold shadow hover:bg-primary-400 hover:text-primary-700 flex items-center justify-center gap-2 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          S'inscrire
+        </button>
+      </form>
+      <div class="mt-6 text-center">
+        <span class="text-gray-600">Déjà un compte ?</span>
+        <button @click="goLogin" class="ml-2 text-primary-600 font-semibold hover:underline">Se connecter</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -38,7 +33,6 @@ import { useRouter } from 'vue-router'
 
 const email = ref('')
 const password = ref('')
-const form = ref(null)
 const router = useRouter()
 
 onMounted(() => {
@@ -48,24 +42,7 @@ onMounted(() => {
   }
 })
 
-const emailRules = [
-  v => !!v || 'Email requis',
-  v => /.+@.+\..+/.test(v) || 'Email invalide',
-]
-
-const passwordRules = [
-  v => !!v || 'Mot de passe requis',
-  v => v.length >= 8 || 'Au moins 8 caractères',
-  v => /[A-Z]/.test(v) || 'Une majuscule',
-  v => /[a-z]/.test(v) || 'Une minuscule',
-  v => /[0-9]/.test(v) || 'Un chiffre',
-  v => /[^A-Za-z0-9]/.test(v) || 'Un caractère spécial',
-]
-
 const register = async () => {
-  const isValid = form.value?.validate()
-  if (!isValid) return
-
   try {
     const res = await fetch('http://localhost:3000/api/auth/register', {
       method: 'POST',

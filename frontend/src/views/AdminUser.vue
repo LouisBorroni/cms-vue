@@ -1,49 +1,44 @@
 <template>
-  <v-app>
+  <div class="min-h-screen bg-gray-50 w-full">
     <Navbar :cartCount="0" @logout="logout" @go-cart="goCart" />
-
-    <v-main class="pa-6">
-      <v-container>
-        <h2 class="my-6 text-center">Administration des Utilisateurs</h2>
-
-        <v-alert v-if="error" type="error" class="mb-4">{{ error }}</v-alert>
-
-        <table class="admin-table">
+    <main class="py-8 px-4 w-full max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold mb-8 text-primary-600 text-center">Administration des Utilisateurs</h2>
+      <div v-if="error" class="bg-red-50 border-l-4 border-red-400 text-red-700 p-4 rounded-lg shadow mb-6 text-center">
+        {{ error }}
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white rounded-xl shadow-lg">
           <thead>
-            <tr>
-              <th>ID</th>
-              <th>Email</th>
-              <th>Rôle</th>
-              <th>Actions</th>
+            <tr class="bg-gray-100">
+              <th class="py-3 px-4 text-left font-semibold text-gray-700">ID</th>
+              <th class="py-3 px-4 text-left font-semibold text-gray-700">Email</th>
+              <th class="py-3 px-4 text-left font-semibold text-gray-700">Rôle</th>
+              <th class="py-3 px-4 text-left font-semibold text-gray-700">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="user in users" :key="user.id">
-              <td>{{ user.id }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.role }}</td>
-              <td>
-                <v-btn
-                  v-if="user.role !== 'admin'"
-                  icon
-                  color="red"
-                  @click="deleteUser(user.id)"
-                  title="Supprimer"
-                >
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
+            <tr v-for="user in users" :key="user.id" class="border-b last:border-b-0 hover:bg-gray-50">
+              <td class="py-3 px-4">{{ user.id }}</td>
+              <td class="py-3 px-4">{{ user.email }}</td>
+              <td class="py-3 px-4">
+                <span :class="user.role === 'admin' ? 'text-primary-600 font-bold' : 'text-gray-700'">{{ user.role }}</span>
+              </td>
+              <td class="py-3 px-4">
+                <button v-if="user.role !== 'admin'" @click="deleteUser(user.id)" class="text-red-500 hover:text-red-700 p-2 rounded-full transition" title="Supprimer">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </td>
             </tr>
             <tr v-if="users.length === 0">
-              <td colspan="4" class="text-center">
-                Aucun utilisateur enregistré.
-              </td>
+              <td colspan="4" class="text-center py-6 text-gray-500">Aucun utilisateur enregistré.</td>
             </tr>
           </tbody>
         </table>
-      </v-container>
-    </v-main>
-  </v-app>
+      </div>
+    </main>
+  </div>
 </template>
 
 <script setup>
@@ -100,31 +95,3 @@ onMounted(() => {
   fetchUsers();
 });
 </script>
-
-<style scoped>
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.admin-table th,
-.admin-table td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: left;
-}
-
-.admin-table th {
-  background-color: #f5f5f5;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-.admin-table tr:hover {
-  background-color: #f1f1f1;
-}
-
-.text-center {
-  text-align: center;
-}
-</style>

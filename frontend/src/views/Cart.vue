@@ -1,94 +1,44 @@
 <template>
-  <v-app>
+  <div class="min-h-screen bg-gray-50 w-full">
     <Navbar :cartCount="cart.length" @logout="logout" @go-cart="goCart" />
-    <v-main class="pa-6">
-            <v-container fluid>
-      <v-row justify="center" class="mt-10">
-        <v-col cols="12" md="8">
-          <h2 class="text-center mb-8">🛒 Mon Panier</h2>
-
-          <v-alert
-            v-if="cart.length === 0"
-            type="info"
-            class="mb-8"
-            border="left"
-            colored-border
-            elevation="2"
-          >
-            Votre panier est vide.
-          </v-alert>
-
-          <v-list two-line v-if="cart.length > 0" class="elevation-2 rounded-lg">
-            <v-list-item
-              v-for="(item, index) in cart"
-              :key="item.id"
-              class="pa-4"
-            >
-              <v-list-item-avatar size="100">
-                <v-img :src="item.image_url || 'https://via.placeholder.com/150'" />
-              </v-list-item-avatar>
-
-              <v-list-item-content class="ml-4">
-                <v-list-item-title class="text-h6 font-weight-medium">{{ item.name }}</v-list-item-title>
-                <v-list-item-subtitle class="mb-3 grey--text">
-                  {{ formatPrice(item.price) }} €
-                </v-list-item-subtitle>
-
-                <v-text-field
-                  v-model.number="item.quantity"
-                  type="number"
-                  min="1"
-                  label="Quantité"
-                  dense
-                  outlined
-                  style="max-width: 100px"
-                  @change="saveCart"
-                />
-              </v-list-item-content>
-
-              <v-list-item-action>
-                <v-btn icon color="red" @click="removeItem(index)" title="Supprimer">
-                  <v-icon size="28">mdi-delete</v-icon>
-                </v-btn>
-              </v-list-item-action>
-            </v-list-item>
-          </v-list>
-
-          <v-card
-            v-if="cart.length > 0"
-            class="mt-8 pa-4"
-            outlined
-            elevation="2"
-          >
-            <v-row align="center" justify="space-between">
-              <v-col cols="12" sm="6" class="text-h5 font-weight-bold">
-                Total : {{ formatPrice(total) }} €
-              </v-col>
-              <v-col cols="12" sm="6" class="text-right">
-                <v-btn
-                  color="green darken-1"
-                  dark
-                  large
-                  @click="checkout"
-                  :disabled="cart.length === 0"
-                  elevation="4"
-                >
-                  Passer commande
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card>
-
-          <v-row justify="center" v-if="cart.length === 0" class="mt-6">
-            <v-btn color="primary" @click="goDashboard" elevation="2">
-              Retour aux articles
-            </v-btn>
-          </v-row>
-        </v-col>
-      </v-row>
-    </v-container>
-    </v-main>
-  </v-app>
+    <main class="py-8 px-4 w-full max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold mb-8 text-primary-600 text-center flex items-center justify-center">🛒 Mon Panier</h2>
+      <div v-if="cart.length === 0" class="bg-blue-50 border-l-4 border-blue-400 text-blue-700 p-6 rounded-lg shadow mb-8 text-center">
+        Votre panier est vide.
+      </div>
+      <div v-else class="space-y-6">
+        <div v-for="(item, index) in cart" :key="item.id" class="flex flex-col sm:flex-row items-center bg-white rounded-xl shadow p-4 gap-4">
+          <img :src="item.image_url || 'https://via.placeholder.com/150'" class="w-32 h-32 object-cover rounded-lg border" />
+          <div class="flex-1 w-full">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="text-xl font-semibold text-gray-800">{{ item.name }}</h3>
+              <button @click="removeItem(index)" class="text-red-500 hover:text-red-700 p-2 rounded-full transition" title="Supprimer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div class="flex flex-wrap items-center gap-4 mb-2">
+              <span class="text-lg font-bold text-primary-600">{{ formatPrice(item.price) }} €</span>
+              <input type="number" min="1" v-model.number="item.quantity" @change="saveCart" class="w-20 px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-primary-600" />
+              <span class="text-gray-500">Quantité</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-6 flex flex-col sm:flex-row justify-between items-center mt-8">
+          <div class="text-2xl font-bold text-primary-600 mb-4 sm:mb-0">Total : {{ formatPrice(total) }} €</div>
+          <button @click="checkout" :disabled="cart.length === 0" class="px-6 py-3 bg-primary-600 text-white rounded-full font-semibold hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+            Passer commande
+          </button>
+        </div>
+      </div>
+      <div v-if="cart.length === 0" class="flex justify-center mt-8">
+        <button @click="goDashboard" class="px-6 py-2 bg-primary-600 text-white rounded-full font-semibold hover:bg-primary-700 transition">
+          Retour aux articles
+        </button>
+      </div>
+    </main>
+  </div>
 </template>
 
 <script setup>
@@ -172,28 +122,3 @@ const goCart = () => {
   router.push('/cart')
 }
 </script>
-
-
-<style scoped>
-h2 {
-  font-weight: 700;
-  font-family: 'Roboto', sans-serif;
-}
-
-.v-list-item {
-  border-bottom: 1px solid #eee;
-}
-
-.v-list-item:last-child {
-  border-bottom: none;
-}
-
-.v-list-item-avatar {
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.v-text-field input {
-  font-weight: 600;
-}
-</style>
