@@ -53,9 +53,25 @@ defineProps({
 
 const isAdmin = ref(false);
 
+const fetchUserInfo = async () => {
+  try {
+    const res = await fetch("http://localhost:3000/api/auth/me", {
+      credentials: "include",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      isAdmin.value = data.role === "admin";
+    } else {
+      isAdmin.value = false;
+    }
+  } catch (error) {
+    console.error("Erreur fetch user info:", error);
+    isAdmin.value = false;
+  }
+};
+
 onMounted(() => {
-  const role = localStorage.getItem("role");
-  isAdmin.value = role === "admin";
+  fetchUserInfo();
 });
 </script>
 

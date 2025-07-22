@@ -14,10 +14,18 @@
       </div>
 
       <div v-else class="space-y-8">
-        <div v-for="order in orders" :key="order.id" class="bg-white rounded-xl shadow p-6">
+        <div
+          v-for="order in orders"
+          :key="order.id"
+          class="bg-white rounded-xl shadow p-6"
+        >
           <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
-            <div class="text-lg font-bold text-primary-600">Commande #{{ order.id }}</div>
-            <div class="text-gray-500">{{ new Date(order.created_at).toLocaleString() }}</div>
+            <div class="text-lg font-bold text-primary-600">
+              Commande #{{ order.id }}
+            </div>
+            <div class="text-gray-500">
+              {{ new Date(order.created_at).toLocaleString() }}
+            </div>
           </div>
 
           <div class="divide-y divide-gray-200">
@@ -36,7 +44,9 @@
                   <div class="text-gray-500 text-sm">x{{ item.quantity }}</div>
                 </div>
               </div>
-              <div class="mt-2 sm:mt-0 text-primary-600 font-bold">{{ formatPrice(item.price * item.quantity) }} €</div>
+              <div class="mt-2 sm:mt-0 text-primary-600 font-bold">
+                {{ formatPrice(item.price * item.quantity) }} €
+              </div>
             </div>
           </div>
 
@@ -45,7 +55,7 @@
           </div>
 
           <button
-            @click="generateInvoicePDF(order, user)"
+            @click="generateInvoicePDFHandler(order)"
             class="mt-4 px-4 py-2 bg-primary-600 text-white rounded-full font-semibold hover:bg-primary-700 transition"
           >
             Télécharger la facture PDF
@@ -64,28 +74,22 @@ import { useRouter } from "vue-router";
 
 interface User {
   email: string;
+  role?: string;
 }
 
 const router = useRouter();
 const orders = ref<any[]>([]);
 const user = ref<User | null>(null);
 
+// 🔐 Récupération des commandes (protégée)
 const fetchOrders = async () => {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-
     const res = await fetch("http://localhost:3000/api/orders", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      credentials: "include", // <- Important pour cookie httpOnly
     });
 
-    if (!res.ok) {
-      alert("Erreur lors du chargement des commandes");
+    if (res.status === 401) {
+      router.push("/login");
       return;
     }
 
@@ -103,25 +107,16 @@ const fetchOrders = async () => {
 
 const fetchUser = async () => {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    const res = await fetch("http://localhost:3000/api/users/me", {
+      credentials: "include",
+    });
+
+    if (res.status === 401) {
       router.push("/login");
       return;
     }
 
-    const res = await fetch("http://localhost:3000/api/users/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!res.ok) {
-      alert("Erreur lors du chargement des informations utilisateur");
-      return;
-    }
-
     user.value = await res.json();
-    console.log(user.value);
   } catch (err: any) {
     alert("Erreur réseau : " + err.message);
     console.error(err);
@@ -130,8 +125,15 @@ const fetchUser = async () => {
 
 const formatPrice = (price: number | string) => Number(price).toFixed(2);
 
-const logout = () => {
-  localStorage.removeItem("token");
+const logout = async () => {
+  try {
+    await fetch("http://localhost:3000/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (err) {
+    console.error("Erreur logout:", err);
+  }
   router.push("/login");
 };
 
@@ -144,7 +146,7 @@ const generateInvoicePDFHandler = (order: any) => {
 };
 
 onMounted(() => {
+  fetchUser(); 
   fetchOrders();
-  fetchUser();
 });
 </script>

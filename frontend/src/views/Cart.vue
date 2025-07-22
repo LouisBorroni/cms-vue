@@ -83,19 +83,12 @@ const checkout = async () => {
   if (cart.value.length === 0) return
 
   try {
-    const token = localStorage.getItem('token')
-    if (!token) {
-      alert('Vous devez être connecté pour passer commande.')
-      router.push('/login')
-      return
-    }
-
     const res = await fetch('http://localhost:3000/api/orders', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
+      credentials: 'include', // important pour envoyer les cookies
       body: JSON.stringify({
         items: cart.value,
         total: total.value,
@@ -122,8 +115,15 @@ const goDashboard = () => {
   router.push('/dashboard')
 }
 
-const logout = () => {
-  localStorage.removeItem('token')
+const logout = async () => {
+  try {
+    await fetch('http://localhost:3000/api/auth/logout', {
+      method: 'POST',
+      credentials: 'include',
+    })
+  } catch (err) {
+    console.error('Erreur logout:', err)
+  }
   router.push('/login')
 }
 

@@ -5,7 +5,7 @@
       <h1 class="text-3xl font-bold mb-8 text-primary-600">Menu</h1>
       <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full">
         <div v-for="article in articles" :key="article.id" class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col w-full">
-          <img :src="article.image_url || 'https://via.placeholder.com/400x200'" alt="Image" class="w-full h-48 object-cover">
+          <img :src="article.image_url || 'https://via.placeholder.com/400x200'" alt="Image" class="w-full h-48 object-cover" />
           <div class="p-5 flex-1 flex flex-col">
             <div class="flex justify-between items-center mb-2">
               <h2 class="text-xl font-semibold text-gray-800">{{ article.name }}</h2>
@@ -82,18 +82,43 @@ const addToCart = (article) => {
 
 const formatPrice = (price) => Number(price).toFixed(2);
 
-const logout = () => {
-  localStorage.removeItem("token");
-  router.push("/login");
+const logout = async () => {
+  try {
+    const res = await fetch("http://localhost:3000/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    if (res.ok) {
+      router.push("/login");
+    } else {
+      alert("Erreur lors de la déconnexion");
+    }
+  } catch {
+    alert("Erreur réseau");
+  }
 };
 
 const goCart = () => {
   router.push("/cart");
 };
 
+const checkAuth = async () => {
+  try {
+    const res = await fetch("http://localhost:3000/api/auth/me", {
+      credentials: "include",
+    });
+    if (res.status === 401) {
+      router.push("/login");
+    }
+  } catch {
+    console.log(err)
+  }
+};
+
 onMounted(() => {
   fetchArticles();
   loadCartFromLocalStorage();
+  checkAuth();
 });
 </script>
 
@@ -107,10 +132,12 @@ onMounted(() => {
 .hover\:bg-primary-700:hover {
   background-color: #15803d;
 }
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.3s;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

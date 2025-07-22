@@ -24,7 +24,12 @@
                 <span :class="user.role === 'admin' ? 'text-primary-600 font-bold' : 'text-gray-700'">{{ user.role }}</span>
               </td>
               <td class="py-3 px-4">
-                <button v-if="user.role !== 'admin'" @click="deleteUser(user.id)" class="text-red-500 hover:text-red-700 p-2 rounded-full transition" title="Supprimer">
+                <button
+                  v-if="user.role !== 'admin'"
+                  @click="deleteUser(user.id)"
+                  class="text-red-500 hover:text-red-700 p-2 rounded-full transition"
+                  title="Supprimer"
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -52,9 +57,8 @@ const error = ref("");
 
 const fetchUsers = async () => {
   try {
-    const token = localStorage.getItem("token");
     const res = await fetch("http://localhost:3000/api/admin/users", {
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: "include",
     });
 
     if (!res.ok) throw new Error("Erreur lors du chargement");
@@ -70,10 +74,9 @@ const deleteUser = async (id) => {
   if (!confirm("Supprimer cet utilisateur ?")) return;
 
   try {
-    const token = localStorage.getItem("token");
     const res = await fetch(`http://localhost:3000/api/admin/users/${id}`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: "include",
     });
 
     if (!res.ok) throw new Error("Erreur lors de la suppression");
@@ -85,7 +88,6 @@ const deleteUser = async (id) => {
 };
 
 const logout = () => {
-  localStorage.removeItem("token");
   router.push("/login");
 };
 

@@ -29,7 +29,6 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { jwtDecode } from 'jwt-decode';
 
 const email = ref('')
 const password = ref('')
@@ -37,26 +36,33 @@ const router = useRouter()
 
 const login = async () => {
   try {
-    const res = await fetch('http://localhost:3000/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value, password: password.value }),
+    const res = await fetch("http://localhost:3000/api/auth/login", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+      }),
     });
 
-    const data = await res.json();
+    console.log(res)
 
-    if (res.ok) {
-      const decoded = jwtDecode(data.token);
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('role', decoded.role);
-      router.push('/dashboard');
-    } else {
-      alert(data.error);
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.error || "Erreur lors de la connexion");
+      return;
     }
-  } catch {
-    alert('Erreur réseau');
+
+    router.push("/dashboard");
+  } catch (err) {
+    alert("Erreur réseau");
+    console.error(err);
   }
 };
+
 
 const goRegister = () => router.push('/register')
 </script>
