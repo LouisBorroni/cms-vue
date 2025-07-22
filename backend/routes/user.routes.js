@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const usersController = require('../controllers/users.controller');
+const auth = require('../middleware/auth');
 
-// Pour l'instant, on retourne une liste vide de users
-router.get('/', (req, res) => {
-  res.json([]);
-});
+router.get('/me', auth, usersController.me);
 
 module.exports = router;

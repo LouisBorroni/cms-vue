@@ -90,8 +90,3 @@ backend :
 se connecter en tant qu'admin: 
 - login : admin@example.com
 - password : adminpassword
-
-
-
-
-à mettre

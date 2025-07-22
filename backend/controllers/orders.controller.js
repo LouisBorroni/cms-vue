@@ -15,7 +15,6 @@ exports.createOrder = async (req, res) => {
       return res.status(400).json({ error: 'Missing order data' })
     }
 
-    // items doit être une string JSON
     const itemsString = JSON.stringify(items)
 
     const [result] = await db.query(
@@ -39,11 +38,10 @@ exports.getOrdersByUser = async (req, res) => {
     const userId = decoded.id
 
     const [orders] = await db.query(
-      'SELECT id, items, total, created_at FROM orders WHERE user_id = ? ORDER BY created_at DESC',
+      'SELECT id, user_id, items, total, created_at FROM orders WHERE user_id = ? ORDER BY created_at DESC',
       [userId]
     )
 
-    // Ne pas parser ici, juste renvoyer les données brutes (items string JSON)
     res.json(orders)
   } catch (err) {
     console.error(err)
