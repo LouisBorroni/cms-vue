@@ -51,25 +51,29 @@ exports.register = async (req, res) => {
 
 
 exports.login = async (req, res) => {
-    const caca = 'adminpassword';
-    bcrypt.hash(caca, 10).then(hash => console.log(hash));
-    console.log('zob');
-  
-  const { email, password } = req.body;
+  const { email, password } = req.body
   try {
-    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-    const user = rows[0];
-    if (!user) return res.status(400).json({ error: 'Invalid credentials' });
+    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email])
+    const user = rows[0]
+    if (!user) return res.status(400).json({ error: 'Invalid credentials' })
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(400).json({ error: 'Invalid credentials' });
+    const match = await bcrypt.compare(password, user.password)
+    if (!match) return res.status(400).json({ error: 'Invalid credentials' })
 
-    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    res.json({ token, userId: user.id }); 
+    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' })
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false,       // false car j'utilise HTTP 
+      sameSite: 'Strict',
+      maxAge: 24 * 60 * 60 * 1000,
+    })
+
+    res.json({ message: 'Login successful' })
   } catch (err) {
-    res.status(500).json({ error: 'Login failed' });
+    res.status(500).json({ error: 'Login failed' })
   }
-};
+}
 
 exports.me = async (req, res) => {
   const userId = req.user.id;
@@ -80,3 +84,10 @@ exports.me = async (req, res) => {
     res.status(500).json({ error: 'Could not fetch user' });
   }
 };
+
+
+exports.logout = (req, res) => {
+  res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'strict' });
+  res.json({ message: 'Déconnexion réussie' });
+};
+

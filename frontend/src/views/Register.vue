@@ -35,10 +35,17 @@ const email = ref('')
 const password = ref('')
 const router = useRouter()
 
-onMounted(() => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    router.push('/dashboard')
+onMounted(async () => {
+  try {
+    const res = await fetch('http://localhost:3000/api/auth/me', {
+      credentials: 'include'  
+    })
+    if (res.ok) {
+      
+      router.push('/dashboard')
+    }
+  } catch {
+    console.log(err)
   }
 })
 

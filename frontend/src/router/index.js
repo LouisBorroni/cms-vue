@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import axios from "axios";
 
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
@@ -48,12 +49,16 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem("token");
-  const isAuthenticated = !!token;
-
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next("/login");
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.requiresAuth) {
+    try {
+      await axios.get("http://localhost:3000/api/users/me", {
+        withCredentials: true,
+      });
+      next();
+    } catch (error) {
+      next("/login");
+    }
   } else {
     next();
   }
